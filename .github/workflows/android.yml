@@ -6,36 +6,19 @@ on:
   pull_request:
     branches: [main]
 
-# jobs:
-#   build:
-
-#     runs-on: ubuntu-latest
-
-#     steps:
-#     - uses: actions/checkout@v2
-#     - name: set up JDK 11
-#       uses: actions/setup-java@v2
-#       with:
-#         java-version: '11'
-#         distribution: 'adopt'
-
-#     - name: Grant execute permission for gradlew
-#       run: chmod +x gradlew
-#     - name: Build with Gradle
-#       run: ./gradlew build
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Use Node.js v12
-        uses: actions/setup-node@v1
+      - name: Install npm dependencies
+        run: |
+          npm install
+      - name: Build Android Release
+        run: |
+          cd android && ./gradlew assembleRelease -PMYAPP_UPLOAD_STORE_PASSWORD='${{ secrets.KEYSTORE_PASSWORD }}' -PMYAPP_UPLOAD_KEY_PASSWORD='${{ secrets.KEYSTORE_PASSWORD }}'
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v1
         with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-          node-version: 12.x
-
-      - run: npm ci
-
-      - run: ./gradlew assembleDebug
-        working-directory: android
-        name: Build Android apk (debug)
+          name: app-release.apk
+          path: android/app/build/outputs/apk/release/
