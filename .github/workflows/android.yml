@@ -2,9 +2,9 @@ name: Android CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 # jobs:
 #   build:
@@ -27,14 +27,15 @@ jobs:
   build:
     runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js v12
-      uses: actions/setup-node@v1
-      with:
-        node-version: 12.x
+      - uses: actions/checkout@v2
+      - name: Use Node.js v12
+        uses: actions/setup-node@v1
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          node-version: 12.x
 
-    - run: npm ci
+      - run: npm ci
 
-    - run: ./gradlew assembleDebug 
-      working-directory: android
-      name: Build Android apk (debug)
+      - run: ./gradlew assembleDebug
+        working-directory: android
+        name: Build Android apk (debug)
